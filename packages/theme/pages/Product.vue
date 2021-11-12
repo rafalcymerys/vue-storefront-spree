@@ -3,7 +3,7 @@
     <div class="product">
       <SfGallery
         :images="productGallery"
-        enable-zoom="true"
+        :enable-zoom="true"
       />
       <div>
         <SfHeading :title="productGetters.getName(product)" description="A set of toys and outfits for your puppy" :level="2" class="sf-heading--left" />
@@ -54,7 +54,6 @@ export default {
     });
 
     const openModal = () => {
-      console.error('test');
       isModalOpen.value = true;
     };
 

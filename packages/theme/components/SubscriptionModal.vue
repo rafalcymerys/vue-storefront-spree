@@ -39,7 +39,7 @@
     </div>
     <div class="subscription-modal__actions">
       <SfPrice :regular="displayPrice" />
-      <SfButton class="subscription-modal__subscribe">Subscribe</SfButton>
+      <SfButton @click="onSubscribe" class="subscription-modal__subscribe">Subscribe</SfButton>
     </div>
   </SfModal>
 </template>
@@ -47,7 +47,8 @@
 <script>
 import { SfCard, SfModal, SfButton, SfRange, SfHeading, SfPrice } from '@storefront-ui/vue';
 import { ref, computed } from '@vue/composition-api';
-import { productGetters } from '@vue-storefront/spree';
+import { useCart, productGetters } from '@vue-storefront/spree';
+import { useUiState } from '~/composables';
 
 export default {
   components: {
@@ -71,6 +72,8 @@ export default {
   setup(props, context) {
     const selectedOptionId = ref('small');
     const selectedWeight = ref(3);
+    const { addItem } = useCart();
+    const { toggleCartSidebar } = useUiState();
 
     const isVisible = computed(() => props.visible);
 
@@ -110,6 +113,12 @@ export default {
       selectedWeight.value = parseInt(value, 10);
     };
 
+    const onSubscribe = async () => {
+      await addItem({ product: selectedVariant.value });
+      context.emit('close');
+      toggleCartSidebar();
+    }
+
     const displayPrice = computed(() => {
       if (!selectedVariant.value) {
         return 'Select your package first';
@@ -124,6 +133,7 @@ export default {
       onOptionSelected,
       isOptionSelected,
       onWeightChanged,
+      onSubscribe,
       displayPrice,
       getVariantTitle,
       getVariantImage,
@@ -135,7 +145,7 @@ export default {
 
 <style lang="scss">
 .subscription-modal {
-  --modal-width: 1200px;
+  --modal-width: 960px;
   --modal-content-padding: var(--spacer-lg) var(--spacer-3xl);
 
   .sf-modal__container {
@@ -168,6 +178,9 @@ export default {
   filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.08));
 
   padding: 20px 20px 0 20px;
+
+  --image-height: 200px;
+  width: unset;
 
   .sf-card__image .sf-image {
     border-radius: 30px;
