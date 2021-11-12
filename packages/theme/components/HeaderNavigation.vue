@@ -46,7 +46,7 @@ export default {
   },
   setup() {
     const { isMobileMenuOpen, toggleMobileMenu } = useUiState();
-    const categories = ['women', 'men'];
+    const categories = ['subscriptions'];
 
     return {
       categories,

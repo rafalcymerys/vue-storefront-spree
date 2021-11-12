@@ -1,24 +1,31 @@
 <template>
   <div id="product">
-    <SfBreadcrumbs :breadcrumbs="breadcrumbs" />
-
     <div class="product">
-      <SfGallery :images="productGallery" />
+      <SfGallery
+        :images="productGallery"
+        enable-zoom="true"
+      />
       <div>
-        <SfHeading :title="productGetters.getName(product)" :level="2" class="sf-heading--left" />
-        <SfCharacteristic title="A new set of toys for your puppy" description="Delivered at your door every month" icon="heart" />
-        <SfCharacteristic title="Cancel anytime" description="No commitment required" icon="clock" />
-        <SfCharacteristic title="Veterinary approved" description="Only products that are safe for your pet" icon="account" />
-        <SfButton @click="openModal">Subscribe now</SfButton>
+        <SfHeading :title="productGetters.getName(product)" description="A set of toys and outfits for your puppy" :level="2" class="sf-heading--left" />
+        <div class="product__characteristics">
+          <SfCharacteristic class="product__characteristic" title="A new set of toys for your puppy" description="Delivered at your door every month" icon="heart" />
+          <SfCharacteristic class="product__characteristic" title="Cancel anytime" description="No commitment required" icon="clock" />
+          <SfCharacteristic class="product__characteristic" title="Veterinary approved" description="Only products that are safe for your pet" icon="account" />
+        </div>
+        <SfButton class="product__subscription-button" @click="openModal">Subscribe now</SfButton>
       </div>
     </div>
 
-    <SubscriptionModal :visible="isModalOpen" @close="isModalOpen = false"/>
+    <SubscriptionModal
+      :visible="isModalOpen"
+      @close="isModalOpen = false"
+      :variants="products"
+    />
   </div>
 </template>
 
 <script>
-import { SfBreadcrumbs, SfHeading, SfGallery, SfCharacteristic, SfButton } from '@storefront-ui/vue';
+import { SfHeading, SfGallery, SfCharacteristic, SfButton } from '@storefront-ui/vue';
 import { onSSR } from '@vue-storefront/core';
 import { useProduct, productGetters } from '@vue-storefront/spree';
 import { computed, ref } from '@vue/composition-api';
@@ -27,22 +34,15 @@ import SubscriptionModal from '@/components/SubscriptionModal.vue';
 export default {
   components: {
     SfHeading,
-    SfBreadcrumbs,
     SfGallery,
     SfCharacteristic,
     SfButton,
     SubscriptionModal
   },
   setup(props, context) {
-    const { id, slug } = context.root.$route.params;
+    const { slug } = context.root.$route.params;
     const { products, search } = useProduct('products');
-    const breadcrumbs = computed(() => productGetters.getBreadcrumbs(product.value));
-    const productGallery = computed(() => productGetters.getGallery(product.value).map(img => ({
-      mobile: { url: img.big },
-      desktop: { url: img.big },
-      big: { url: img.big },
-      alt: product.value._name || product.value.name
-    })));
+    const productGallery = computed(() => productGetters.getGallery(product.value));
     const isModalOpen = ref(false);
 
     const product = computed(() => {
@@ -61,7 +61,7 @@ export default {
     return {
       product,
       productGetters,
-      breadcrumbs,
+      products,
       productGallery,
       openModal,
       isModalOpen
@@ -74,5 +74,19 @@ export default {
 .product {
   display: grid;
   grid-template-columns: 60% 40%;
+  margin-top: 6.5rem;
+  margin-bottom: 6.5rem;
+}
+
+.product__characteristics {
+  margin-top: 3rem;
+}
+
+.product__characteristic {
+  margin-bottom: 2rem;
+}
+
+.product__subscription-button {
+  margin-top: 4.5rem;
 }
 </style>

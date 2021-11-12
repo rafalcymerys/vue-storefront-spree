@@ -2,24 +2,18 @@
   <SfModal :visible="isVisible" class="subscription-modal" @close="$emit('close')">
     <SfHeading :level="2" title="Configure your package" />
     <div class="subscription-modal__options">
-      <div class="subscription-modal__option-wrapper">
+      <div
+        class="subscription-modal__option-wrapper"
+        v-for="variant in variants"
+        :key="variant._variantId"
+      >
         <SfCard
-          :class="{ 'subscription-modal__option--selected': isOptionSelected('small') }"
-          title="Small package"
+          :class="{ 'subscription-modal__option--selected': isOptionSelected(getVariantOptionId(variant)) }"
+          :title="getVariantTitle(variant)"
           button-text="Choose"
           description="Selection of 1 toy"
-          @click="onOptionSelected('small')"
-          image="/dog1.jpg"
-        />
-      </div>
-      <div class="subscription-modal__option-wrapper">
-        <SfCard
-          :class="{ 'subscription-modal__option--selected': isOptionSelected('large') }"
-          title="Large package"
-          @click="onOptionSelected('large')"
-          description="Selection of 1 toy and 1 outfit"
-          button-text="Choose"
-          image="/dog1.jpg"
+          @click="onOptionSelected(getVariantOptionId(variant))"
+          :image="getVariantImage(variant)"
         />
       </div>
     </div>
@@ -42,14 +36,17 @@
         }"
       />
     </div>
-    <SfPrice :regular="price" />
-    <SfButton>Add to cart</SfButton>
+    <div class="subscription-modal__actions">
+      <SfPrice :regular="displayPrice" />
+      <SfButton>Subscribe</SfButton>
+    </div>
   </SfModal>
 </template>
 
 <script>
 import { SfCard, SfModal, SfButton, SfRange, SfHeading, SfPrice } from '@storefront-ui/vue';
-import { ref, watch, computed } from '@vue/composition-api';
+import { ref, computed } from '@vue/composition-api';
+import { productGetters } from '@vue-storefront/spree';
 
 export default {
   components: {
@@ -65,14 +62,42 @@ export default {
       type: Boolean,
       default: false
     },
+    variants: {
+      type: Array,
+      required: true
+    }
   },
   setup(props, context) {
-
-    /// todo why is this not working?
     const selectedOptionId = ref('small');
     const selectedWeight = ref(3);
 
+    console.log(props.variants);
+
     const isVisible = computed(() => props.visible);
+
+    const selectedVariant = computed(() => {
+      return props.variants.find((variant) => variant.optionValues.find(ov => ov.name === selectedOptionId.value) !== undefined);
+    });
+
+    const selectedVariantPrice = computed(() => {
+      return parseFloat(selectedVariant.value.price.current);
+    });
+
+    const getVariantTitle = (variant) => {
+      return variant.optionValues[0].presentation;
+    };
+
+    const getVariantOptionId = (variant) => {
+      return variant.optionValues[0].name;
+    };
+
+    const getVariantImage = (variant) => {
+      if (variant.images.length > 1) {
+        return productGetters.getGallery(variant)[2].big.url;
+      }
+
+      return undefined;
+    }
 
     const onOptionSelected = (optionId) => {
       selectedOptionId.value = optionId
@@ -83,13 +108,15 @@ export default {
     };
 
     const onWeightChanged = (value) => {
-      console.error(value)
       selectedWeight.value = parseInt(value, 10);
     };
 
-    const price = computed(() => {
-      const basePrice = 10
-      const value = basePrice + (selectedOptionId.value === 'small' ? 0 : 10) + selectedWeight.value * 0.5;
+    const displayPrice = computed(() => {
+      if (!selectedVariant.value) {
+        return 'Select your package first';
+      }
+
+      const value = parseFloat(selectedVariantPrice.value) + selectedWeight.value * 0.5;
       return `\$${value.toFixed(2)} / month`
     });
 
@@ -98,7 +125,10 @@ export default {
       onOptionSelected,
       isOptionSelected,
       onWeightChanged,
-      price
+      displayPrice,
+      getVariantTitle,
+      getVariantImage,
+      getVariantOptionId
     };
   }
 }
@@ -123,6 +153,12 @@ export default {
 }
 
 .subscription-modal__option--selected {
-  border: 2px solid var(--c-secondary);
+  border: 2px solid var(--c-primary);
+}
+
+.subscription-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 </style>
