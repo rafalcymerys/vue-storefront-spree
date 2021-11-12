@@ -22,19 +22,8 @@
       <SfHeading class="sf-heading--left" description="What it the weight of your dog?" />
       <SfRange
         class="subscription-modal__weight-range"
-        :config="{
-          start: 10,
-          range: {
-            min: 3,
-            max: 30
-          },
-          step: 1,
-          format: {
-            from: (value) => parseInt(value),
-            to: (value) => `${value} kg`
-          },
-          tooltips: true
-        }"
+        :config="weightRangeConfig"
+        @change="onWeightChanged"
       />
     </div>
     <div class="subscription-modal__actions">
@@ -128,6 +117,20 @@ export default {
       return `\$${value.toFixed(2)} / month`
     });
 
+    const weightRangeConfig = ref({
+      start: 10,
+      range: {
+        min: 3,
+        max: 30
+      },
+      step: 1,
+      format: {
+        from: (value) => parseInt(value),
+        to: (value) => `${value.toFixed(2)} kg`
+      },
+      tooltips: true
+    });
+
     return {
       isVisible,
       onOptionSelected,
@@ -137,7 +140,8 @@ export default {
       displayPrice,
       getVariantTitle,
       getVariantImage,
-      getVariantOptionId
+      getVariantOptionId,
+      weightRangeConfig
     };
   }
 }
