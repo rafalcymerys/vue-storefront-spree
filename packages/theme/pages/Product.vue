@@ -70,7 +70,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 .product {
   display: grid;
   grid-template-columns: 60% 40%;
@@ -84,6 +84,16 @@ export default {
 
 .product__characteristic {
   margin-bottom: 2rem;
+
+  --characteristic-title-font-weight: var(--font-weight--semi-bold);
+
+  .sf-characteristic__icon {
+    margin-right: 1.5rem;
+    border-radius: 100%;
+    padding: 8px;
+    background: white;
+    filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.08));
+  }
 }
 
 .product__subscription-button {

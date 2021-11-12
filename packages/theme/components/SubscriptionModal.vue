@@ -8,6 +8,7 @@
         :key="variant._variantId"
       >
         <SfCard
+          class="subscription-modal__option"
           :class="{ 'subscription-modal__option--selected': isOptionSelected(getVariantOptionId(variant)) }"
           :title="getVariantTitle(variant)"
           button-text="Choose"
@@ -17,10 +18,10 @@
         />
       </div>
     </div>
-    <div>
+    <div class="subscription-modal__weight">
       <SfHeading class="sf-heading--left" description="What it the weight of your dog?" />
       <SfRange
-        class="subscription-modal__weight"
+        class="subscription-modal__weight-range"
         :config="{
           start: 10,
           range: {
@@ -38,7 +39,7 @@
     </div>
     <div class="subscription-modal__actions">
       <SfPrice :regular="displayPrice" />
-      <SfButton>Subscribe</SfButton>
+      <SfButton class="subscription-modal__subscribe">Subscribe</SfButton>
     </div>
   </SfModal>
 </template>
@@ -70,8 +71,6 @@ export default {
   setup(props, context) {
     const selectedOptionId = ref('small');
     const selectedWeight = ref(3);
-
-    console.log(props.variants);
 
     const isVisible = computed(() => props.visible);
 
@@ -134,11 +133,18 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
 .subscription-modal {
-  --modal-width: 900px;
+  --modal-width: 1200px;
+  --modal-content-padding: var(--spacer-lg) var(--spacer-3xl);
+
+  .sf-modal__container {
+    border-radius: 30px;
+  }
 }
+
 .subscription-modal__options {
+  margin-top: 40px;
   display: grid;
   grid-template-columns: 50% 50%;
 }
@@ -148,17 +154,42 @@ export default {
 }
 
 .subscription-modal__weight {
+  margin-top: 60px;
+}
+
+.subscription-modal__weight-range {
   margin-left: 0;
   margin-right: 0;
 }
 
+.subscription-modal__option {
+  border-radius: 30px;
+  background: white;
+  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.08));
+
+  padding: 20px 20px 0 20px;
+
+  .sf-card__image .sf-image {
+    border-radius: 30px;
+  }
+
+  .sf-card__details {
+    background: transparent;
+  }
+}
+
 .subscription-modal__option--selected {
-  border: 2px solid var(--c-primary);
+  border: 3px solid var(--c-primary);
 }
 
 .subscription-modal__actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top: 50px;
+}
+
+.subscription-modal__subscribe {
+  margin-left: 30px;
 }
 </style>
