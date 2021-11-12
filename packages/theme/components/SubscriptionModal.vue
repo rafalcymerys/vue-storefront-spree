@@ -1,5 +1,5 @@
 <template>
-  <SfModal :visible="true" class="subscription-modal">
+  <SfModal :visible="isVisible" class="subscription-modal" @close="$emit('close')">
     <SfHeading :level="2" title="Configure your package" />
     <div class="subscription-modal__options">
       <div class="subscription-modal__option-wrapper">
@@ -60,16 +60,19 @@ export default {
     SfHeading,
     SfPrice
   },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false
+    },
+  },
   setup(props, context) {
 
     /// todo why is this not working?
-    const isVisible = ref(props.visible);
     const selectedOptionId = ref('small');
     const selectedWeight = ref(3);
 
-    watch(() => props.visible, (newValue) => {
-      isVisible.value = newValue;
-    });
+    const isVisible = computed(() => props.visible);
 
     const onOptionSelected = (optionId) => {
       selectedOptionId.value = optionId

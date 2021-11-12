@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <SubscriptionModal :visible="isModalOpen" />
+    <SubscriptionModal :visible="isModalOpen" @close="isModalOpen = false"/>
   </div>
 </template>
 
